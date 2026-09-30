@@ -73,3 +73,7 @@ These percentages describe a deliberately small synthetic regression set; they a
 3. the evidence is re-read and the release status is explicitly changed to APPROVED.
 
 The code and detailed engineering documentation remain the evidence source for this portfolio project.
+
+## Recruiter quick view
+
+This project demonstrates a bounded industrial RAG workflow: retrieval, evidence citation, structured validation, refusal/escalation and synthetic evaluation. It uses synthetic data only and is intentionally separated from proprietary employer work.
