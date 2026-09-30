@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="980" height="330" viewBox="0 0 980 330">
+  <rect width="980" height="330" rx="16" fill="#0d1117"/>
+  <text x="34" y="48" fill="#58a6ff" font-family="monospace" font-size="24">Industrial Quality RAG — deterministic demo</text>
+  <text x="34" y="96" fill="#c9d1d9" font-family="monospace" font-size="18">Q: What is the tightening torque for component AX17?</text>
+  <text x="34" y="142" fill="#7ee787" font-family="monospace" font-size="18">status: answered</text>
+  <text x="34" y="184" fill="#c9d1d9" font-family="monospace" font-size="18">answer: The tightening torque for component AX17 is 32 Nm.</text>
+  <text x="34" y="226" fill="#c9d1d9" font-family="monospace" font-size="18">citation: ax17_active.md:L9-L9 (rev 2)</text>
+  <text x="34" y="278" fill="#8b949e" font-family="monospace" font-size="16">Synthetic data only · unsupported component IDs are refused</text>
+</svg>
