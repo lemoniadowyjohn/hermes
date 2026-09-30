@@ -12,12 +12,15 @@ permissions:
 
 jobs:
   deploy:
-    if: ${{ hashFiles('deploy.tar.xz') != '' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - name: Expand verified R01-R18 implementation
         run: |
+          if [ ! -f deploy.tar.xz ]; then
+            echo "Deployment archive already consumed."
+            exit 0
+          fi
           tar --exclude='./.github/workflows/*' -xJf deploy.tar.xz
           rm -f deploy.tar.xz
           git config user.name "github-actions[bot]"
