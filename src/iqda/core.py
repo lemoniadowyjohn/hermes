@@ -114,12 +114,22 @@ class RAGService:
             if c.revision == latest[(c.document_id, c.component)]
         ]
 
-    def retrieve(self, question: str, k: int = 3) -> list[RetrievalHit]:
+    def retrieve(
+        self,
+        question: str,
+        k: int = 3,
+        components: set[str] | None = None,
+    ) -> list[RetrievalHit]:
         q = self.embedding_provider.embed([question])[0]
+        candidates = (
+            (c, v)
+            for c, v in zip(self.chunks, self._vectors)
+            if not components or c.component in components
+        )
         ranked = sorted(
             (
                 RetrievalHit(chunk=c, score=cosine(q, v))
-                for c, v in zip(self.chunks, self._vectors)
+                for c, v in candidates
             ),
             key=lambda hit: hit.score,
             reverse=True,
@@ -139,9 +149,10 @@ class RAGService:
                 (f"unknown component: {sorted(unknown)[0]}",),
             )
 
-        hits = self.retrieve(question)
-        if requested:
-            hits = [h for h in hits if h.chunk.component in requested]
+        hits = self.retrieve(
+            question,
+            components=requested or None,
+        )
         if not hits:
             return Answer("refused", "", 0.0, (), ("insufficient evidence",))
 
