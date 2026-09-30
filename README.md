@@ -6,6 +6,8 @@ A portfolio-grade, evidence-grounded RAG system for synthetic industrial quality
 
 **Data policy:** all bundled documents are synthetic. No proprietary employer or customer documents are included.
 
+This repository is maintained as a standalone Applied-AI portfolio project; CI verifies the deterministic offline regression suite on repository changes.
+
 ## Problem
 
 Industrial quality work often depends on knowing which requirement applies to which component, revision, batch, and inspection record. A plausible but unsupported answer is unacceptable. The assistant therefore treats answer generation as only one stage in a larger evidence-control workflow.
