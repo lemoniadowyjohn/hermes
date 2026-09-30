@@ -77,3 +77,8 @@ The code and detailed engineering documentation remain the evidence source for t
 ## Recruiter quick view
 
 This project demonstrates a bounded industrial RAG workflow: retrieval, evidence citation, structured validation, refusal/escalation and synthetic evaluation. It uses synthetic data only and is intentionally separated from proprietary employer work.
+
+## Related portfolio
+
+- [Governed Agent Workflow Demo](https://github.com/lemoniadowyjohn/space-Y-) — policy-aware agent routing and approval-boundary portfolio project.
+- [CARLA Map Quality Toolkit](https://github.com/lemoniadowyjohn/carla-control-suite/tree/portfolio/carla-map-quality-toolkit-20260930/portfolio/carla-map-quality-toolkit) — automotive/geospatial validation toolkit with CI-backed quality gates.
