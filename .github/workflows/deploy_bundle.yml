@@ -9,12 +9,12 @@ permissions:
 
 jobs:
   expand:
-    if: ${{ hashFiles('project.zip') != '' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - name: Expand project source
         run: |
+          test -f project.zip
           unzip -o project.zip -d .
           rm -f project.zip .github/workflows/deploy_bundle.yml
           git config user.name "github-actions[bot]"
