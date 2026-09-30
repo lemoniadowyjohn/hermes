@@ -4,7 +4,7 @@
 
 **HOLD — DO NOT COPY TO CV YET**
 
-Reason: the repository and offline regression suite run successfully, and mocked OpenAI HTTP contracts pass, but a real LLM/embedding API evaluation and a Docker build/run have not yet been executed in the current verification environment.
+Reason: the repository, offline regression suite, and GitHub Actions Docker/container smoke gate pass, and mocked OpenAI HTTP contracts pass. A real LLM/embedding API evaluation has not yet been executed, so live semantic retrieval and model behavior remain unverified.
 
 ## Approval gate
 
@@ -13,7 +13,7 @@ Change this file to `APPROVED` only after:
 1. real-provider index build succeeds;
 2. real-provider evaluation meets the release thresholds in `EVALUATION.md`;
 3. citation/refusal safety cases remain passing;
-4. Docker image builds and the containerized API passes a smoke test;
+4. GitHub Actions Docker image build and containerized API smoke test remain passing;
 5. repository/history review confirms no proprietary data or secrets.
 
 ## Future CV wording after approval
