@@ -31,10 +31,10 @@ No user API key was available or requested for use. The live provider implementa
 
 ### Docker build/run
 
-No Docker or Podman executable is available in this execution environment. The Dockerfile is present, but image build and container smoke testing remain unverified.
+The original local execution environment had no Docker or Podman executable. This gate was subsequently verified in GitHub Actions on `main`: workflow run `36721792993` completed successfully, including both the `test` job and the `container-smoke` job. The container job built the image, started the service, and verified the `/health` endpoint.
 
 ## Final CV gate
 
 **NOT YET READY**
 
-Do not add `RAG`, `LLM API`, or live `embeddings` claims to the CV from this project yet. Complete the live-provider evaluation and Docker build/run gates described in `PHASE_IMPLEMENTATION_GUIDE.md` and `RAG_PROJECT_CV_BLOCK.md`, then re-run the release decision.
+Do not add live `RAG`, `LLM API`, or semantic `embeddings` claims to the CV from this project yet. The Docker/container gate is verified; complete the live-provider evaluation described in `PHASE_IMPLEMENTATION_GUIDE.md` and `RAG_PROJECT_CV_BLOCK.md`, then re-run the release decision.
