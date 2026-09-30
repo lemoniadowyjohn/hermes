@@ -9,7 +9,8 @@ description = "Evidence-grounded RAG portfolio project for synthetic industrial 
 requires-python = ">=3.11"
 dependencies = [
   "fastapi>=0.115",
-  "pydantic>=2.7"
+  "pydantic>=2.7",
+  "uvicorn>=0.30"
 ]
 
 [project.optional-dependencies]
