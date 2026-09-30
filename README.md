@@ -141,3 +141,8 @@ See [LIMITATIONS.md](LIMITATIONS.md).
 - [CARLA Map Quality Toolkit](https://github.com/lemoniadowyjohn/carla-control-suite/tree/portfolio/carla-map-quality-toolkit-20260930/portfolio/carla-map-quality-toolkit) — automotive/geospatial validation toolkit.
 - [Python Excel Data Reconciliation Demo](https://github.com/lemoniadowyjohn/space-Y--/tree/master/portfolio/python-excel-data-reconciliation-demo) — deterministic spreadsheet reconciliation.
 - [Power Platform Quality App](https://github.com/lemoniadowyjohn/watson/tree/main/portfolio/power-platform-quality-app) — documented Power Platform quality-workflow reference design.
+
+
+## Verification receipt
+
+See [`docs/VERIFICATION.md`](docs/VERIFICATION.md) for the hosted CI evidence and remaining release boundary.
