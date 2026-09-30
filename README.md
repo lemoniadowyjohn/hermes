@@ -142,19 +142,19 @@ Local verification performed in the supplied execution environment:
 - structured-output validity: **100%**;
 - OpenAI HTTP payload/response contracts: **tested with mocked HTTP**;
 - real OpenAI API call: **not executed**;
-- Docker image build/run: **not executed because no Docker/Podman runtime was available**.
+- Docker image build/run: **verified in GitHub Actions CI**; the latest `main` run passed both the test job and the container smoke job.
 
 These percentages describe a deliberately small synthetic regression set, not general-world model accuracy.
 
 ## Portfolio release gate
 
-**Current verdict: NOT YET READY to claim RAG/LLM skills on the CV.**
+**Current verdict: NOT YET READY to claim live RAG/LLM skills on the CV.**
 
-The repository is code-complete enough for the offline portfolio demonstration, but the final GenAI claim should wait until both of these are completed on the user's machine:
+The Docker packaging gate is now verified by GitHub Actions CI, including a successful image build, container start, and `/health` smoke check. The remaining release blocker is live-provider validation:
 
 1. Run the full evaluation in `IQDA_MODE=openai` against a real API key and save the resulting report.
-2. Build and run the Docker image, then repeat the smoke test against the containerized API.
+2. Confirm the live semantic retrieval, citation, refusal, structured-output, latency, and usage metrics meet the thresholds in `EVALUATION.md`.
 
-After those gates pass without weakening refusal/citation behavior, update `RAG_PROJECT_CV_BLOCK.md` from HOLD to APPROVED.
+After that gate passes without weakening refusal/citation behavior, update `RAG_PROJECT_CV_BLOCK.md` from HOLD to APPROVED.
 
 See `PHASE_IMPLEMENTATION_GUIDE.md`, `ARCHITECTURE.md`, `EVALUATION.md`, `LIMITATIONS.md`, and `SECURITY_AND_PRIVACY.md` for the engineering details.
