@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import re
+
 from typing import Protocol, Sequence
 
 
@@ -14,7 +16,7 @@ class DeterministicAnswerProvider:
         terms = {t.strip("?.:,;()[]").lower() for t in question.split() if len(t) > 2}
         candidates = []
         for block in evidence:
-            for sentence in block.replace("\n", " ").split("."):
+            for sentence in re.split(r"(?<!\\d)\\.(?:\\s+|$)", block.replace("\n", " ")):
                 sentence = sentence.strip()
                 if sentence:
                     overlap = len(
