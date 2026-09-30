@@ -25,3 +25,14 @@ def test_superseded_revision_is_not_used():
     service = RAGService.from_directory(DATA)
     assert all(chunk.status == "active" for chunk in service.chunks)
     assert all("28 Nm" not in chunk.text for chunk in service.chunks)
+
+
+def test_explicit_component_is_filtered_before_top_k():
+    service = RAGService.from_directory(DATA)
+    result = service.ask(
+        "What is the maximum dimensional deviation for component BX21?"
+    )
+    assert result.status == "answered"
+    assert "0.5 mm" in result.text
+    assert result.citations
+    assert all("bx21_active.md" in citation for citation in result.citations)
