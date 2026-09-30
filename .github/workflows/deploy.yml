@@ -1,0 +1,26 @@
+name: Deploy full IQDA source
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - deploy.tar.xz
+      - .github/workflows/deploy.yml
+
+permissions:
+  contents: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Expand verified R01-R18 implementation
+        run: |
+          tar -xJf deploy.tar.xz
+          rm -f deploy.tar.xz .github/workflows/deploy.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Deploy verified Industrial Quality Documentation Assistant"
+          git push
