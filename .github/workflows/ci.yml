@@ -44,27 +44,3 @@ jobs:
       - name: Stop container
         if: always()
         run: docker stop iqda-smoke || true
-
-  docker-smoke:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Docker build
-        run: docker build -t iqda:ci .
-      - name: Docker run
-        run: docker run -d --name iqda-ci -p 8000:8000 iqda:ci
-      - name: Health check
-        run: |
-          for i in 1 2 3 4 5 6 7 8 9 10; do
-            if curl --fail --silent http://127.0.0.1:8000/health > health.json; then
-              cat health.json
-              grep -q '"status":"ok"' health.json
-              exit 0
-            fi
-            sleep 1
-          done
-          docker logs iqda-ci
-          exit 1
-      - name: Cleanup
-        if: always()
-        run: docker rm -f iqda-ci || true
