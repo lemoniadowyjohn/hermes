@@ -1,46 +1,22 @@
+import json
 from pathlib import Path
 
-from iqda.core import RAGService
-
-
-DATA = Path(__file__).parents[1] / "data" / "synthetic_docs"
-
-
-def main() -> int:
-    service = RAGService.from_directory(DATA)
-
-    cases = [
-        (
-            "AX17 active requirement",
-            service.ask("What is the tightening torque for component AX17?"),
-            lambda result: result.status == "answered" and "32 Nm" in result.text,
-        ),
-        (
-            "BX21 active requirement",
-            service.ask("What is the maximum dimensional deviation for component BX21?"),
-            lambda result: result.status == "answered" and "0.5 mm" in result.text,
-        ),
-        (
-            "unknown component refusal",
-            service.ask("What is the requirement for component ZZ99?"),
-            lambda result: result.status == "refused",
-        ),
-        (
-            "superseded revision excluded",
-            service.ask("What is the tightening torque for component AX17?"),
-            lambda result: "28 Nm" not in result.text,
-        ),
-    ]
-
-    passed = 0
-    for name, result, predicate in cases:
-        ok = predicate(result)
-        passed += int(ok)
-        print(f"{'PASS' if ok else 'FAIL'}: {name}")
-
-    print(f"evaluation: {passed}/{len(cases)} cases passed")
-    return 0 if passed == len(cases) else 1
-
+from iqda.config import Settings
+from iqda.evaluation import run_evaluation
+from iqda.factory import build_components, rebuild_index
 
 if __name__ == "__main__":
-    raise SystemExit(main())
+    settings = Settings()
+    rebuild_index(settings)
+    service, *_ = build_components(settings)
+    report = run_evaluation(service, "data/eval/eval_cases.json")
+    Path("artifacts").mkdir(exist_ok=True)
+    Path("artifacts/evaluation_report.json").write_text(json.dumps(report, indent=2), encoding="utf-8")
+    lines = ["# Evaluation Report", "", "## Summary", ""]
+    for key, value in report["summary"].items():
+        lines.append(f"- **{key}**: {value}")
+    lines += ["", "## Cases", "", "| ID | Category | Expected | Actual | Status OK |", "|---|---|---|---|---|"]
+    for row in report["cases"]:
+        lines.append(f"| {row['id']} | {row['category']} | {row['status_expected']} | {row['status_actual']} | {row['status_correct']} |")
+    Path("artifacts/evaluation_report.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
+    print(json.dumps(report["summary"], indent=2))

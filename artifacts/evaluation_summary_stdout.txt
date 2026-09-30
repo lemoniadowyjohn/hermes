@@ -1,0 +1,14 @@
+{
+  "cases": 10,
+  "status_accuracy": 1.0,
+  "retrieval_hit_rate": 1.0,
+  "retrieval_cases": 4,
+  "citation_correctness": 1.0,
+  "citation_cases": 4,
+  "factual_consistency": 1.0,
+  "factual_cases": 4,
+  "refusal_correctness": 1.0,
+  "structured_output_validity": 1.0,
+  "mean_latency_ms": 0.89,
+  "token_usage_available": false
+}

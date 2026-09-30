@@ -1,58 +1,50 @@
 from __future__ import annotations
 
-import os
-from pathlib import Path
+from fastapi import FastAPI, HTTPException
 
-from fastapi import FastAPI
-from pydantic import BaseModel
-
-from .core import RAGService
-from .embeddings import OpenAIEmbeddingProvider
-from .providers import OpenAIAnswerProvider
+from .config import Settings
+from .factory import build_components, rebuild_index
+from .logging_utils import configure_logging
+from .models import AnswerResponse, ApprovalDecision, ApprovalRecord, AskRequest
 
 
-class AskRequest(BaseModel):
-    question: str
+def create_app(settings: Settings | None = None) -> FastAPI:
+    settings = settings or Settings()
+    settings.validate()
+    service, store, embeddings, approvals = build_components(settings)
+    app = FastAPI(title="Industrial Quality Documentation Assistant", version="0.1.0")
+
+    @app.get("/health")
+    def health() -> dict:
+        return {
+            "status": "ok",
+            "mode": settings.mode,
+            "embedding_provider": embeddings.name,
+            "indexed_documents": len(store.all_metadata()),
+        }
+
+    @app.post("/index/rebuild")
+    def index_rebuild() -> dict:
+        count = rebuild_index(settings)
+        return {"chunks_indexed": count}
+
+    @app.post("/ask", response_model=AnswerResponse)
+    def ask(request: AskRequest) -> AnswerResponse:
+        return service.ask(request.question)
+
+    @app.get("/approvals", response_model=list[ApprovalRecord])
+    def pending_approvals() -> list[ApprovalRecord]:
+        return approvals.list_pending()
+
+    @app.post("/approvals/{approval_id}", response_model=ApprovalRecord)
+    def decide_approval(approval_id: str, decision: ApprovalDecision) -> ApprovalRecord:
+        try:
+            return approvals.decide(approval_id, decision.decision, decision.reviewer_note)
+        except KeyError:
+            raise HTTPException(status_code=404, detail="approval not found")
+
+    return app
 
 
-def build_service() -> RAGService:
-    data_dir = Path(os.getenv("IQDA_DATA_DIR", "data/synthetic_docs"))
-    if os.getenv("IQDA_MODE", "offline").lower() == "openai":
-        return RAGService.from_directory(
-            data_dir,
-            embedding_provider=OpenAIEmbeddingProvider(
-                os.getenv("IQDA_EMBEDDING_MODEL", "text-embedding-3-small")
-            ),
-            answer_provider=OpenAIAnswerProvider(
-                os.getenv("IQDA_MODEL", "gpt-5-mini")
-            ),
-        )
-    return RAGService.from_directory(data_dir)
-
-
-app = FastAPI(
-    title="Industrial Quality Documentation Assistant",
-    version="0.1.0",
-)
-_service = build_service()
-
-
-@app.get("/health")
-def health() -> dict[str, object]:
-    return {
-        "status": "ok",
-        "mode": os.getenv("IQDA_MODE", "offline"),
-        "chunks": len(_service.chunks),
-    }
-
-
-@app.post("/ask")
-def ask(request: AskRequest) -> dict[str, object]:
-    answer = _service.ask(request.question)
-    return {
-        "status": answer.status,
-        "answer": answer.text,
-        "confidence": answer.confidence,
-        "citations": answer.citations,
-        "reasons": answer.reasons,
-    }
+configure_logging()
+app = create_app()

@@ -1,0 +1,251 @@
+{
+  "summary": {
+    "cases": 10,
+    "status_accuracy": 1.0,
+    "retrieval_hit_rate": 1.0,
+    "retrieval_cases": 4,
+    "citation_correctness": 1.0,
+    "citation_cases": 4,
+    "factual_consistency": 1.0,
+    "factual_cases": 4,
+    "refusal_correctness": 1.0,
+    "structured_output_validity": 1.0,
+    "mean_latency_ms": 0.89,
+    "token_usage_available": false
+  },
+  "cases": [
+    {
+      "id": "E01",
+      "category": "answerable",
+      "status_expected": "answered",
+      "status_actual": "answered",
+      "status_correct": true,
+      "retrieval_eligible": true,
+      "retrieval_hit": true,
+      "citation_eligible": true,
+      "citation_correct": true,
+      "factual_eligible": true,
+      "factual_consistency": true,
+      "refusal_correct": true,
+      "structured_valid": true,
+      "latency_ms": 1.84,
+      "usage": {
+        "input_tokens": null,
+        "output_tokens": null,
+        "total_tokens": null
+      },
+      "reasons": []
+    },
+    {
+      "id": "E02",
+      "category": "answerable",
+      "status_expected": "answered",
+      "status_actual": "answered",
+      "status_correct": true,
+      "retrieval_eligible": true,
+      "retrieval_hit": true,
+      "citation_eligible": true,
+      "citation_correct": true,
+      "factual_eligible": true,
+      "factual_consistency": true,
+      "refusal_correct": true,
+      "structured_valid": true,
+      "latency_ms": 1.28,
+      "usage": {
+        "input_tokens": null,
+        "output_tokens": null,
+        "total_tokens": null
+      },
+      "reasons": []
+    },
+    {
+      "id": "E03",
+      "category": "partially_answerable",
+      "status_expected": "partial",
+      "status_actual": "partial",
+      "status_correct": true,
+      "retrieval_eligible": true,
+      "retrieval_hit": true,
+      "citation_eligible": true,
+      "citation_correct": true,
+      "factual_eligible": true,
+      "factual_consistency": true,
+      "refusal_correct": true,
+      "structured_valid": true,
+      "latency_ms": 1.18,
+      "usage": {
+        "input_tokens": null,
+        "output_tokens": null,
+        "total_tokens": null
+      },
+      "reasons": [
+        "partial_evidence"
+      ]
+    },
+    {
+      "id": "E04",
+      "category": "unanswerable",
+      "status_expected": "refused",
+      "status_actual": "refused",
+      "status_correct": true,
+      "retrieval_eligible": false,
+      "retrieval_hit": null,
+      "citation_eligible": false,
+      "citation_correct": null,
+      "factual_eligible": false,
+      "factual_consistency": null,
+      "refusal_correct": true,
+      "structured_valid": true,
+      "latency_ms": 1.08,
+      "usage": {
+        "input_tokens": null,
+        "output_tokens": null,
+        "total_tokens": null
+      },
+      "reasons": []
+    },
+    {
+      "id": "E05",
+      "category": "conflicting_documents",
+      "status_expected": "escalate",
+      "status_actual": "escalate",
+      "status_correct": true,
+      "retrieval_eligible": false,
+      "retrieval_hit": null,
+      "citation_eligible": false,
+      "citation_correct": null,
+      "factual_eligible": false,
+      "factual_consistency": null,
+      "refusal_correct": true,
+      "structured_valid": true,
+      "latency_ms": 0.98,
+      "usage": {
+        "input_tokens": null,
+        "output_tokens": null,
+        "total_tokens": null
+      },
+      "reasons": [
+        "conflicting_active_evidence:Torque requirement:['10.0 \u00b1 1.0 Nm.', '12.0 \u00b1 1.0 Nm.']"
+      ]
+    },
+    {
+      "id": "E06",
+      "category": "missing_document",
+      "status_expected": "refused",
+      "status_actual": "refused",
+      "status_correct": true,
+      "retrieval_eligible": false,
+      "retrieval_hit": null,
+      "citation_eligible": false,
+      "citation_correct": null,
+      "factual_eligible": false,
+      "factual_consistency": null,
+      "refusal_correct": true,
+      "structured_valid": true,
+      "latency_ms": 0.17,
+      "usage": {
+        "input_tokens": null,
+        "output_tokens": null,
+        "total_tokens": null
+      },
+      "reasons": [
+        "multiple_component_ids_ambiguous",
+        "missing_document:WI-ZZ99"
+      ]
+    },
+    {
+      "id": "E07",
+      "category": "ambiguous_requirement",
+      "status_expected": "refused",
+      "status_actual": "refused",
+      "status_correct": true,
+      "retrieval_eligible": false,
+      "retrieval_hit": null,
+      "citation_eligible": false,
+      "citation_correct": null,
+      "factual_eligible": false,
+      "factual_consistency": null,
+      "refusal_correct": true,
+      "structured_valid": true,
+      "latency_ms": 0.01,
+      "usage": {
+        "input_tokens": null,
+        "output_tokens": null,
+        "total_tokens": null
+      },
+      "reasons": [
+        "component_id_missing_or_ambiguous"
+      ]
+    },
+    {
+      "id": "E08",
+      "category": "outdated_revision",
+      "status_expected": "refused",
+      "status_actual": "refused",
+      "status_correct": true,
+      "retrieval_eligible": false,
+      "retrieval_hit": null,
+      "citation_eligible": false,
+      "citation_correct": null,
+      "factual_eligible": false,
+      "factual_consistency": null,
+      "refusal_correct": true,
+      "structured_valid": true,
+      "latency_ms": 1.23,
+      "usage": {
+        "input_tokens": null,
+        "output_tokens": null,
+        "total_tokens": null
+      },
+      "reasons": [
+        "outdated_revision_requested:1<active:2"
+      ]
+    },
+    {
+      "id": "E09",
+      "category": "wrong_component_id",
+      "status_expected": "refused",
+      "status_actual": "refused",
+      "status_correct": true,
+      "retrieval_eligible": false,
+      "retrieval_hit": null,
+      "citation_eligible": false,
+      "citation_correct": null,
+      "factual_eligible": false,
+      "factual_consistency": null,
+      "refusal_correct": true,
+      "structured_valid": true,
+      "latency_ms": 0.13,
+      "usage": {
+        "input_tokens": null,
+        "output_tokens": null,
+        "total_tokens": null
+      },
+      "reasons": [
+        "unknown_component_id:AX71"
+      ]
+    },
+    {
+      "id": "E10",
+      "category": "answerable_traceability",
+      "status_expected": "answered",
+      "status_actual": "answered",
+      "status_correct": true,
+      "retrieval_eligible": true,
+      "retrieval_hit": true,
+      "citation_eligible": true,
+      "citation_correct": true,
+      "factual_eligible": true,
+      "factual_consistency": true,
+      "refusal_correct": true,
+      "structured_valid": true,
+      "latency_ms": 1.01,
+      "usage": {
+        "input_tokens": null,
+        "output_tokens": null,
+        "total_tokens": null
+      },
+      "reasons": []
+    }
+  ]
+}

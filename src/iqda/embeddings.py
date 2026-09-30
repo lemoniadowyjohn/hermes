@@ -1,50 +1,64 @@
 from __future__ import annotations
 
-import hashlib
-import math
-from typing import Protocol, Sequence
+from abc import ABC, abstractmethod
+import httpx
+import numpy as np
+from sklearn.feature_extraction.text import HashingVectorizer
 
 
-class EmbeddingProvider(Protocol):
-    def embed(self, texts: Sequence[str]) -> list[list[float]]: ...
+class EmbeddingProvider(ABC):
+    name: str
+
+    @abstractmethod
+    def embed(self, texts: list[str]) -> np.ndarray:
+        raise NotImplementedError
 
 
-class HashEmbeddingProvider:
-    """Deterministic, dependency-free vector baseline for tests and CI.
+class HashEmbeddingProvider(EmbeddingProvider):
+    """Deterministic offline baseline for tests/dev; not a semantic production model."""
 
-    This is intentionally not presented as a semantic production embedding model.
-    """
+    name = "hashing-vectorizer-dev"
 
-    def __init__(self, dimensions: int = 256) -> None:
-        self.dimensions = dimensions
+    def __init__(self, n_features: int = 4096):
+        self.vectorizer = HashingVectorizer(
+            n_features=n_features,
+            alternate_sign=False,
+            norm="l2",
+            ngram_range=(1, 2),
+            lowercase=True,
+        )
 
-    def embed(self, texts: Sequence[str]) -> list[list[float]]:
-        return [self._embed_one(text) for text in texts]
-
-    def _embed_one(self, text: str) -> list[float]:
-        vec = [0.0] * self.dimensions
-        for token in text.lower().split():
-            digest = hashlib.blake2b(token.encode("utf-8"), digest_size=8).digest()
-            raw = int.from_bytes(digest, "little")
-            idx = raw % self.dimensions
-            sign = 1.0 if (raw >> 8) & 1 else -1.0
-            vec[idx] += sign
-        norm = math.sqrt(sum(v * v for v in vec)) or 1.0
-        return [v / norm for v in vec]
+    def embed(self, texts: list[str]) -> np.ndarray:
+        if not texts:
+            return np.empty((0, self.vectorizer.n_features), dtype=np.float32)
+        matrix = self.vectorizer.transform(texts)
+        return matrix.toarray().astype(np.float32)
 
 
-class OpenAIEmbeddingProvider:
-    """Optional live semantic embedding adapter. Requires the `llm` extra."""
-
-    def __init__(self, model: str = "text-embedding-3-small") -> None:
-        from openai import OpenAI
-        self.client = OpenAI()
+class OpenAIEmbeddingProvider(EmbeddingProvider):
+    def __init__(
+        self,
+        api_key: str,
+        model: str = "text-embedding-3-small",
+        base_url: str = "https://api.openai.com/v1",
+        timeout: float = 30.0,
+        client: httpx.Client | None = None,
+    ):
+        self.api_key = api_key
         self.model = model
+        self.name = f"openai:{model}"
+        self.base_url = base_url.rstrip("/")
+        self.client = client or httpx.Client(timeout=timeout)
 
-    def embed(self, texts: Sequence[str]) -> list[list[float]]:
-        response = self.client.embeddings.create(model=self.model, input=list(texts))
-        return [item.embedding for item in response.data]
-
-
-def cosine(a: Sequence[float], b: Sequence[float]) -> float:
-    return sum(x * y for x, y in zip(a, b))
+    def embed(self, texts: list[str]) -> np.ndarray:
+        if not texts:
+            return np.empty((0, 0), dtype=np.float32)
+        response = self.client.post(
+            f"{self.base_url}/embeddings",
+            headers={"Authorization": f"Bearer {self.api_key}"},
+            json={"model": self.model, "input": texts},
+        )
+        response.raise_for_status()
+        payload = response.json()
+        vectors = [row["embedding"] for row in sorted(payload["data"], key=lambda x: x["index"])]
+        return np.asarray(vectors, dtype=np.float32)

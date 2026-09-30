@@ -1,21 +1,33 @@
-# RAG Portfolio CV Block
+# RAG Project CV Block
 
 ## Status
 
-**APPROVED FOR PORTFOLIO-CV USE WITH BOUNDED WORDING**
+**HOLD — DO NOT COPY TO CV YET**
 
-This repository is public portfolio/project evidence. It is not professional employer delivery and is not a production RAG/LLM deployment.
+Reason: the repository and offline regression suite run successfully, and mocked OpenAI HTTP contracts pass, but a real LLM/embedding API evaluation and a Docker build/run have not yet been executed in the current verification environment.
 
-## Industrial Quality Documentation Assistant — Applied AI Portfolio
+## Approval gate
 
-- Implemented an evidence-grounded RAG-style workflow over synthetic industrial quality documents with active-revision/status filtering, component-aware retrieval, file/line citations, unknown-component refusal and conservative conflict/escalation controls.
-- Exposed the workflow through a typed FastAPI/Pydantic API with deterministic offline providers and a bounded synthetic regression evaluation.
-- Added GitHub Actions checks for package installation, pytest, synthetic evaluation, Docker image build, container startup and /health smoke testing.
+Change this file to `APPROVED` only after:
 
-### Safe technology wording
+1. real-provider index build succeeds;
+2. real-provider evaluation meets the release thresholds in `EVALUATION.md`;
+3. citation/refusal safety cases remain passing;
+4. Docker image builds and the containerized API passes a smoke test;
+5. repository/history review confirms no proprietary data or secrets.
 
-Python · FastAPI · Pydantic · evidence-grounded retrieval · citations · refusal/escalation · deterministic evaluation · Docker · GitHub Actions
+## Future CV wording after approval
 
-### Boundary
+**Industrial Quality Documentation Assistant — Applied AI Portfolio Project**
 
-The optional OpenAI embeddings/Responses path is an integration path. Do not describe real-provider performance as benchmarked or claim production LLM/RAG ownership unless separate live-provider evidence is recorded.
+- Built an evidence-grounded documentation assistant over synthetic industrial quality and inspection records, with revision-aware retrieval, source citations, conflict detection, and refusal/escalation when evidence is missing or inconsistent.
+- Implemented a reproducible evaluation harness covering answerable, partial, unanswerable, conflicting, missing-document, ambiguous, stale-revision, and wrong-component scenarios, including retrieval, citation, factual-consistency, refusal, schema-validity, latency, and usage metrics.
+- Exposed the workflow through a typed REST API with persistent human-review records, automated tests, structured logging, and container packaging.
+
+### Technology line — add only after the approval gate passes
+
+Python · FastAPI · Pydantic · RAG · embeddings · vector retrieval · LLM API · structured outputs/function calling · SQLite · pytest · Docker
+
+## Interview-safe description before approval
+
+If discussing the project before the gate is complete, describe it as an **implemented portfolio prototype with offline regression tests and mocked provider-contract tests**, not as a validated production LLM deployment.

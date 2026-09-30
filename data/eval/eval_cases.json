@@ -1,0 +1,82 @@
+[
+  {
+    "id": "E01",
+    "category": "answerable",
+    "question": "What is the torque requirement for component AX17?",
+    "expected_status": "answered",
+    "expected_doc_ids": ["QP-AX17"],
+    "expected_answer_contains": ["8.5 ± 0.5 Nm"]
+  },
+  {
+    "id": "E02",
+    "category": "answerable",
+    "question": "What is the inspection dimension for component AX17?",
+    "expected_status": "answered",
+    "expected_doc_ids": ["QP-AX17"],
+    "expected_answer_contains": ["24.00 ± 0.20 mm"]
+  },
+  {
+    "id": "E03",
+    "category": "partially_answerable",
+    "question": "For component AX17, give the torque and coating requirement.",
+    "expected_status": "partial",
+    "expected_doc_ids": ["QP-AX17"],
+    "expected_answer_contains": ["8.5 ± 0.5 Nm"]
+  },
+  {
+    "id": "E04",
+    "category": "unanswerable",
+    "question": "What is the coating requirement for component AX17?",
+    "expected_status": "refused",
+    "expected_doc_ids": [],
+    "expected_answer_contains": []
+  },
+  {
+    "id": "E05",
+    "category": "conflicting_documents",
+    "question": "What is the torque requirement for component BX42?",
+    "expected_status": "escalate",
+    "expected_doc_ids": [],
+    "expected_answer_contains": []
+  },
+  {
+    "id": "E06",
+    "category": "missing_document",
+    "question": "According to WI-ZZ99, what is the torque requirement for component AX17?",
+    "expected_status": "refused",
+    "expected_doc_ids": [],
+    "expected_answer_contains": []
+  },
+  {
+    "id": "E07",
+    "category": "ambiguous_requirement",
+    "question": "What torque should be used for the bracket?",
+    "expected_status": "refused",
+    "expected_doc_ids": [],
+    "expected_answer_contains": []
+  },
+  {
+    "id": "E08",
+    "category": "outdated_revision",
+    "question": "According to revision 1, what is the torque requirement for component AX17?",
+    "expected_status": "refused",
+    "expected_doc_ids": [],
+    "expected_answer_contains": []
+  },
+  {
+    "id": "E09",
+    "category": "wrong_component_id",
+    "question": "What is the torque requirement for component AX71?",
+    "expected_status": "refused",
+    "expected_doc_ids": [],
+    "expected_answer_contains": []
+  },
+  {
+    "id": "E10",
+    "category": "answerable_traceability",
+    "question": "What was the measured dimension for component AX17 in batch B2401?",
+    "expected_status": "answered",
+    "expected_doc_ids": ["INSP-AX17-B2401"],
+    "expected_answer_contains": ["24.08 mm"]
+  }
+]

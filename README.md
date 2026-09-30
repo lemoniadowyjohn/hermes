@@ -1,148 +1,160 @@
 # Industrial Quality Documentation Assistant
 
-> **Repository identity:** the GitHub slug `hermes` is historical. This repository contains the **Industrial Quality Documentation Assistant** portfolio project. It is separate from Michał Dembski's private agent-orchestration R&D work.
-
 [![CI](https://github.com/lemoniadowyjohn/hermes/actions/workflows/ci.yml/badge.svg)](https://github.com/lemoniadowyjohn/hermes/actions/workflows/ci.yml)
 
-A compact, evidence-grounded RAG-style system for **synthetic** industrial quality documentation. The project focuses on retrieval controls, provenance, revision handling, refusal/escalation behavior and testability rather than on claiming production-scale GenAI infrastructure.
+A portfolio-grade, evidence-grounded RAG system for synthetic industrial quality documentation. The project is designed to demonstrate the gap between a chatbot that merely produces plausible text and an applied-AI system that can retrieve evidence, cite it, detect stale/conflicting documentation, refuse unsupported requests, and route uncertain cases to human review.
 
-![Demo](docs/demo.svg)
+**Data policy:** all bundled documents are synthetic. No proprietary employer or customer documents are included.
 
 ## Problem
 
-Industrial quality questions often depend on the correct component, active document revision and traceable evidence. A plausible answer is not enough if the system cannot show where it came from or detect when the requested evidence is missing or stale.
-
-## Solution
+Industrial quality work often depends on knowing which requirement applies to which component, revision, batch, and inspection record. A plausible but unsupported answer is unacceptable. The assistant therefore treats answer generation as only one stage in a larger evidence-control workflow.
 
 ```text
-Synthetic Markdown documents
-        |
-line-aware parsing + metadata
-        |
-active-revision/status filtering
-        |
-embedding provider
-  |                     |
-deterministic hash      optional OpenAI embeddings
-(CI baseline)           (integration path)
-        |
-in-memory cosine retrieval
-        |
-answer provider
-  |                     |
-deterministic evidence  optional OpenAI Responses
-extractor (CI)          (integration path)
-        |
-refusal / conflict / provenance gates
-        |
-FastAPI response with status + citations + reasons
+Documents
+  ↓
+Parsing + metadata extraction
+  ↓
+Section-aware chunking
+  ↓
+Embeddings
+  ↓
+SQLite vector persistence
+  ↓
+Retrieval
+  ↓
+LLM / deterministic test double
+  ↓
+Strict structured answer
+  ↓
+Citation + revision + conflict validation
+  ↓
+Confidence/refusal gate
+  ↓
+Answer / partial answer / human escalation
 ```
 
-## Technology
+## Pragmatic technology choices
 
-- Python 3.11+
-- FastAPI + Pydantic
-- deterministic hash embeddings for offline regression tests
-- optional OpenAI embeddings and Responses provider
-- pytest
-- Docker
-- GitHub Actions
+- **Python 3.11+** for the application and evaluation code.
+- **FastAPI + Pydantic** for a small typed REST surface and response validation.
+- **SQLite + NumPy cosine similarity** for transparent persistence and vector search. For this portfolio corpus, a separate vector database would add operational complexity without improving the learning objective.
+- **OpenAI embeddings and Responses API as the configurable live provider.** The repository also contains deterministic offline providers so CI can test control logic without spending API tokens.
+- **scikit-learn HashingVectorizer only as the offline embedding test baseline.** It is explicitly not presented as the production semantic embedding model.
+- **pytest** for unit, integration, HTTP-contract, and evaluation tests.
+- **Dockerfile** for container packaging.
 
-## Recruiter quick view
+The live OpenAI implementation uses strict JSON-schema function calling for the answer contract. Model and embedding IDs are environment-configurable so the code does not depend on a hard-coded long-lived model assumption.
 
-The repository demonstrates:
+## Repository layout
 
-- synthetic document ingestion with revision/status metadata;
-- active-revision selection before retrieval;
-- component-aware retrieval;
-- evidence citations with file and line provenance;
-- refusal of unknown component identifiers;
-- exclusion of superseded requirements;
-- conservative conflict/escalation logic;
-- provider interfaces that keep CI independent of paid API access;
-- containerized API execution verified in CI.
+```text
+src/iqda/
+  api.py             FastAPI application
+  parsing.py         Markdown/text/JSON/PDF parsing + metadata
+  chunking.py        section-aware chunks with line provenance
+  embeddings.py      offline and OpenAI embedding providers
+  vector_store.py    SQLite vector persistence + cosine search
+  retrieval.py       retrieval policy
+  llm.py             offline test double + OpenAI Responses client
+  validation.py      citation/revision/component/conflict gates
+  confidence.py      confidence calculation
+  persistence.py     human-approval persistence
+  service.py         end-to-end orchestration
+  evaluation.py      reproducible evaluation harness
+
+data/synthetic_docs/ synthetic quality procedures and inspection records
+data/eval/            evaluation cases
+tests/                automated tests
+scripts/              index/evaluation/smoke commands
+artifacts/            generated evaluation evidence
+```
 
 ## Run locally
 
 ```bash
 python -m venv .venv
-source .venv/bin/activate  # Windows: .venv\Scripts\activate
+source .venv/bin/activate   # Windows: .venv\Scripts\activate
 pip install -e ".[dev]"
-pytest -q
-python scripts/evaluate.py
-uvicorn iqda.api:app --host 0.0.0.0 --port 8000
+
+PYTHONPATH=src python scripts/build_index.py
+PYTHONPATH=src python scripts/smoke_test.py
+pytest
+PYTHONPATH=src python scripts/evaluate.py
+PYTHONPATH=src uvicorn iqda.api:app --host 0.0.0.0 --port 8000
 ```
 
-Health check:
+Example request:
 
 ```bash
-curl http://127.0.0.1:8000/health
+curl -X POST http://localhost:8000/ask \
+  -H "Content-Type: application/json" \
+  -d '{"question":"What is the torque requirement for component AX17?"}'
 ```
 
-## Optional live-provider mode
+The response includes a status, confidence, structured citations, retrieval evidence, reasons, latency, and provider usage when available.
 
-Install the optional provider dependency and supply configuration at runtime:
+## Run with a real LLM and semantic embeddings
 
 ```bash
-pip install -e ".[llm]"
 export IQDA_MODE=openai
 export OPENAI_API_KEY=...
-export IQDA_MODEL=gpt-5-mini
-export IQDA_EMBEDDING_MODEL=text-embedding-3-small
+export OPENAI_MODEL=<supported Responses API model>
+export OPENAI_EMBEDDING_MODEL=text-embedding-3-small
+
+PYTHONPATH=src python scripts/build_index.py
+PYTHONPATH=src python scripts/evaluate.py
 ```
 
-The public CI acceptance gate intentionally uses deterministic providers. Therefore this repository proves the **workflow and control implementation**, not general-world LLM accuracy or real-provider performance.
+Do not commit `.env` or API keys. The live provider path must be evaluated separately because offline CI deliberately uses deterministic test doubles.
 
-## Tests and evaluation
+## REST API
 
-GitHub Actions runs:
+- `GET /health` — runtime mode, embedding provider, index state.
+- `POST /index/rebuild` — rebuild the local index from configured documents.
+- `POST /ask` — retrieve, answer, validate, and apply confidence/refusal logic.
+- `GET /approvals` — pending partial/conflict escalations.
+- `POST /approvals/{id}` — approve or reject an escalated result with a reviewer note.
 
-1. package installation;
-2. pytest regression tests;
-3. `scripts/evaluate.py` against the bundled synthetic corpus;
-4. Docker image build;
-5. container startup and `/health` smoke test.
+## Quality behavior demonstrated
 
-See [EVALUATION.md](EVALUATION.md) for the bounded evaluation scope.
+The assistant does not blindly answer. It can reject or escalate when:
 
-## Repository layout
+- the component ID is missing or ambiguous;
+- the component ID is unknown;
+- a specifically requested document is absent;
+- a user requests a superseded revision while a later active revision exists;
+- two active documents contain conflicting requirements;
+- the LLM cites a chunk that was not actually retrieved;
+- the requested information is missing from the evidence;
+- confidence is below the configured threshold.
 
-```text
-src/iqda/                  application code
-tests/                     regression tests
-data/synthetic_docs/       synthetic quality documents
-scripts/evaluate.py        bounded regression evaluation
-docs/demo.svg              recruiter-facing demo visual
-ARCHITECTURE.md             architecture notes
-EVALUATION.md               evaluation scope
-LIMITATIONS.md              known limitations
-SECURITY_AND_PRIVACY.md     data/privacy boundary
-Dockerfile                  container packaging
-.github/workflows/ci.yml    automated verification
-```
+## Current verification status
 
-## Limitations
+Local verification performed in the supplied execution environment:
 
-This is a portfolio implementation, not a production document-control system. The corpus is deliberately small, the offline embedding baseline is not a semantic production model, and the API does not include enterprise authentication or authorization.
+- automated tests: **passing**;
+- synthetic evaluation cases: **10**;
+- retrieval hit rate: **100% across 4 eligible evidence-bearing cases**;
+- citation correctness: **100% across 4 cited-answer cases**;
+- factual consistency checks: **100% across 4 labeled factual cases**;
+- refusal correctness: **100%**;
+- structured-output validity: **100%**;
+- OpenAI HTTP payload/response contracts: **tested with mocked HTTP**;
+- real OpenAI API call: **not executed**;
+- Docker image build/run: **not executed because no Docker/Podman runtime was available**.
 
-See [LIMITATIONS.md](LIMITATIONS.md).
+These percentages describe a deliberately small synthetic regression set, not general-world model accuracy.
 
-## Data and claim boundary
+## Portfolio release gate
 
-- all bundled documents are synthetic;
-- no employer/customer documents or proprietary records are included;
-- credentials are never committed;
-- this project is portfolio/project evidence, not a claim of professional production RAG deployment;
-- the optional OpenAI path is an integration path, not a published accuracy benchmark.
+**Current verdict: NOT YET READY to claim RAG/LLM skills on the CV.**
 
-## Related portfolio
+The repository is code-complete enough for the offline portfolio demonstration, but the final GenAI claim should wait until both of these are completed on the user's machine:
 
-- [Governed Agent Workflow Demo](https://github.com/lemoniadowyjohn/space-Y-) — policy-aware routing, fallback and approval-boundary demonstration.
-- [CARLA Map Quality Toolkit](https://github.com/lemoniadowyjohn/carla-control-suite) — automotive/geospatial validation toolkit.
-- [Python Excel Data Reconciliation Demo](https://github.com/lemoniadowyjohn/space-Y--) — deterministic spreadsheet reconciliation.
-- [Power Platform Quality App](https://github.com/lemoniadowyjohn/watson) — documented Power Platform quality-workflow reference design.
+1. Run the full evaluation in `IQDA_MODE=openai` against a real API key and save the resulting report.
+2. Build and run the Docker image, then repeat the smoke test against the containerized API.
 
+After those gates pass without weakening refusal/citation behavior, update `RAG_PROJECT_CV_BLOCK.md` from HOLD to APPROVED.
 
-## Verification receipt
-
-See [`docs/VERIFICATION.md`](docs/VERIFICATION.md) for the hosted CI evidence and remaining release boundary.
+See `PHASE_IMPLEMENTATION_GUIDE.md`, `ARCHITECTURE.md`, `EVALUATION.md`, `LIMITATIONS.md`, and `SECURITY_AND_PRIVACY.md` for the engineering details.
