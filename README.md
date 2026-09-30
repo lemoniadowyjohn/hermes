@@ -138,9 +138,9 @@ See [LIMITATIONS.md](LIMITATIONS.md).
 ## Related portfolio
 
 - [Governed Agent Workflow Demo](https://github.com/lemoniadowyjohn/space-Y-) — policy-aware routing, fallback and approval-boundary demonstration.
-- [CARLA Map Quality Toolkit](https://github.com/lemoniadowyjohn/carla-control-suite/tree/portfolio/carla-map-quality-toolkit-20260930/portfolio/carla-map-quality-toolkit) — automotive/geospatial validation toolkit.
-- [Python Excel Data Reconciliation Demo](https://github.com/lemoniadowyjohn/space-Y--/tree/master/portfolio/python-excel-data-reconciliation-demo) — deterministic spreadsheet reconciliation.
-- [Power Platform Quality App](https://github.com/lemoniadowyjohn/watson/tree/main/portfolio/power-platform-quality-app) — documented Power Platform quality-workflow reference design.
+- [CARLA Map Quality Toolkit](https://github.com/lemoniadowyjohn/carla-control-suite) — automotive/geospatial validation toolkit.
+- [Python Excel Data Reconciliation Demo](https://github.com/lemoniadowyjohn/space-Y--) — deterministic spreadsheet reconciliation.
+- [Power Platform Quality App](https://github.com/lemoniadowyjohn/watson) — documented Power Platform quality-workflow reference design.
 
 
 ## Verification receipt
