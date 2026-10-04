@@ -1,5 +1,7 @@
 # Industrial Quality Documentation Assistant
 
+> **Repository identity:** the GitHub slug `hermes` is historical. This public recruiter-facing repository contains the **Industrial Quality Documentation Assistant** portfolio project; it is separate from broader private/personal HermesAgent R&D.
+
 [![CI](https://github.com/lemoniadowyjohn/hermes/actions/workflows/ci.yml/badge.svg)](https://github.com/lemoniadowyjohn/hermes/actions/workflows/ci.yml)
 
 A portfolio-grade, evidence-grounded RAG system for synthetic industrial quality documentation. The project is designed to demonstrate the gap between a chatbot that merely produces plausible text and an applied-AI system that can retrieve evidence, cite it, detect stale/conflicting documentation, refuse unsupported requests, and route uncertain cases to human review.
