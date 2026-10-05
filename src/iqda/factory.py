@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from .chunking import SectionChunker
 from .config import Settings
-from .embeddings import HashEmbeddingProvider, OpenAIEmbeddingProvider
-from .llm import ExtractiveQualityLLM, OpenAIResponsesLLM
+from .embeddings import EmbeddingProvider, HashEmbeddingProvider, OpenAIEmbeddingProvider
+from .llm import ExtractiveQualityLLM, LLMProvider, OpenAIResponsesLLM
 from .parsing import DocumentParser
 from .persistence import ApprovalStore
 from .retrieval import Retriever
@@ -14,6 +14,8 @@ from .vector_store import SQLiteVectorStore
 def build_components(settings: Settings):
     settings.validate()
     store = SQLiteVectorStore(settings.db_path)
+    embeddings: EmbeddingProvider
+    llm: LLMProvider
     if settings.mode == "openai":
         embeddings = OpenAIEmbeddingProvider(settings.openai_api_key or "", settings.openai_embedding_model)
         llm = OpenAIResponsesLLM(settings.openai_api_key or "", settings.openai_model)
