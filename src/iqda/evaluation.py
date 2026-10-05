@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 from statistics import mean
+from typing import Any
 
 from .models import AnswerResponse, AnswerStatus, EvalCase
 from .service import QualityAssistantService
@@ -18,7 +19,7 @@ def _rate(rows: list[dict], field: str, eligible_field: str | None = None) -> tu
 def run_evaluation(service: QualityAssistantService, cases_path: str | Path) -> dict:
     raw = json.loads(Path(cases_path).read_text(encoding="utf-8"))
     cases = [EvalCase.model_validate(item) for item in raw]
-    rows = []
+    rows: list[dict[str, Any]] = []
     for case in cases:
         response = service.ask(case.question)
         retrieved_doc_ids = {r["document_id"] for r in response.retrieval}
