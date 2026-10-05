@@ -73,4 +73,4 @@ class DocumentParser:
             raw[key] = value
         if "document_id" not in raw:
             raw["document_id"] = path.stem
-        return DocumentMetadata(**raw)
+        return DocumentMetadata.model_validate(raw)
