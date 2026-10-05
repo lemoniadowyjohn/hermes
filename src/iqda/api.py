@@ -40,8 +40,8 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     def decide_approval(approval_id: str, decision: ApprovalDecision) -> ApprovalRecord:
         try:
             return approvals.decide(approval_id, decision.decision, decision.reviewer_note)
-        except KeyError:
-            raise HTTPException(status_code=404, detail="approval not found")
+        except KeyError as exc:
+            raise HTTPException(status_code=404, detail="approval not found") from exc
 
     return app
 
