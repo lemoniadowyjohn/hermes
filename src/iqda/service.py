@@ -45,7 +45,7 @@ class QualityAssistantService:
         elif not component_ids:
             hard_stop = True
             reasons.append("component_id_missing_or_ambiguous")
-        elif not self.store.metadata_for_component(component_id):
+        elif component_id is not None and not self.store.metadata_for_component(component_id):
             hard_stop = True
             reasons.append(f"unknown_component_id:{component_id}")
 
