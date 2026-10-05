@@ -1,0 +1,78 @@
+name: Live provider evaluation
+
+on:
+  workflow_dispatch:
+    inputs:
+      model:
+        description: "OpenAI Responses API model ID to evaluate"
+        required: true
+        type: string
+      embedding_model:
+        description: "OpenAI embedding model ID"
+        required: true
+        default: "text-embedding-3-small"
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: iqda-live-provider-evaluation
+  cancel-in-progress: false
+
+jobs:
+  evaluate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment: live-provider-evaluation
+    env:
+      IQDA_MODE: openai
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      OPENAI_MODEL: ${{ inputs.model }}
+      OPENAI_EMBEDDING_MODEL: ${{ inputs.embedding_model }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Refuse to run without explicit API secret
+        shell: bash
+        run: |
+          if [ -z "$OPENAI_API_KEY" ]; then
+            echo "OPENAI_API_KEY is not configured for the live-provider-evaluation environment."
+            exit 1
+          fi
+      - name: Install
+        run: python -m pip install -e ".[dev]"
+      - name: Run live evaluation
+        run: python scripts/evaluate.py
+      - name: Write sanitized run metadata
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          from datetime import datetime, timezone
+          from pathlib import Path
+
+          Path("artifacts").mkdir(exist_ok=True)
+          metadata = {
+              "evaluated_at_utc": datetime.now(timezone.utc).isoformat(),
+              "mode": "openai",
+              "model": os.environ["OPENAI_MODEL"],
+              "embedding_model": os.environ["OPENAI_EMBEDDING_MODEL"],
+              "dataset": "data/eval/eval_cases.json",
+          }
+          Path("artifacts/live_run_metadata.json").write_text(
+              json.dumps(metadata, indent=2),
+              encoding="utf-8",
+          )
+          PY
+      - name: Upload sanitized live-provider evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: iqda-live-provider-evaluation
+          path: artifacts/
+          if-no-files-found: error
+          retention-days: 30
