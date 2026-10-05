@@ -150,7 +150,7 @@ These percentages describe a deliberately small synthetic regression set, not ge
 
 ## Portfolio release gate
 
-**Current verdict: NOT YET READY to claim live RAG/LLM skills on the CV.**
+**Current verdict: READY to present as a portfolio/R&D RAG implementation; NOT YET READY to claim live-provider validation or production-scale RAG ownership.**
 
 The Docker packaging gate is now verified by GitHub Actions CI, including a successful image build, container start, and `/health` smoke check. The remaining release blocker is live-provider validation:
 
